@@ -41,21 +41,37 @@ class BitcoinExporter:
     def __init__(self, rpc_obj: BitcoinRpc, metrics: dict):
         self.bitcoin_rpc = rpc_obj
         self.metrics = metrics
+        self.fetch_count = 0
+        logger.info("Exporter initialized, metrics count={}".format(len(metrics.keys())))
 
     def _fetch_metricts(self):
+        self.fetch_count += 1
+        
+        logger.info("Starting metrics fetch, count={}".format(self.fetch_count))
+        self.uptime = self.bitcoin_rpc.uptime()
         self.network_info = self.bitcoin_rpc.get_network_info()
         self.net_totals = self.bitcoin_rpc.get_net_totals()
+        self.memory_info = self.bitcoin_rpc.get_memory_info()
+        self.mem_pool_info = self.bitcoin_rpc.get_mem_pool_info()
 
     def update_metrics(self):
         self._fetch_metricts()
 
-        self.metrics["connections"].labels(direction="in").set(self.network_info["connections_in"])
-        self.metrics["connections"].labels(direction="out").set(self.network_info["connections_out"])
-        self.metrics["connections"].labels(direction="total").set(self.network_info["connections"])
+        logger.info("Updating metrics")
+        self.metrics["uptime"].set(self.uptime)
         
-        self.metrics["net_total_bytes"].labels(rxtx="rx").set(self.net_totals["totalbytesrecv"])
-        self.metrics["net_total_bytes"].labels(rxtx="tx").set(self.net_totals["totalbytessent"])
-        
+        self.metrics["network_info_connections_in"].set(self.network_info["connections_in"])
+        self.metrics["network_info_connections_out"].set(self.network_info["connections_out"])
+        self.metrics["network_info_connections"].set(self.network_info["connections"])
+        self.metrics["net_totals_total_bytes_recv"].set(self.net_totals["totalbytesrecv"])
+        self.metrics["net_totals_total_bytes_sent"].set(self.net_totals["totalbytessent"])
+
+        self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
+        self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
+        self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
+        self.metrics["memory_info_used"].set(self.memory_info["locked"]["used"])
+        self.metrics["memory_info_free"].set(self.memory_info["locked"]["free"])
+        self.metrics["memory_info_total"].set(self.memory_info["locked"]["total"])
 
 def load_bitcoin_config() -> dict:
     config_file = Path.joinpath(BITCOIN_DIR, "bitcoin.conf")

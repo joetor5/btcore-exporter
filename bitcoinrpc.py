@@ -54,6 +54,14 @@ class BitcoinRpc:
         """Returns the total uptime of the server."""
         return self._rpc_call("uptime")
     
+    def get_block_chain_info(self) -> dict:
+        """Returns various state info regarding blockchain processing."""
+        return self._rpc_call("getblockchaininfo")
+    
+    def get_block_count(self) -> dict:
+        """Returns the height of the most-work fully-validated chain."""
+        return self._rpc_call("getblockcount")
+    
     def get_memory_info(self) -> dict:
         """Returns information about memory usage."""
         return self._rpc_call("getmemoryinfo")
@@ -78,3 +86,4 @@ class BitcoinRpc:
         if count < 0:
             count = 0
         return self._rpc_call("getnodeaddresses", str(count))
+    
