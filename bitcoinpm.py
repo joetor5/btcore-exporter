@@ -23,7 +23,7 @@ MEMORY_INFO_CHUNKS_USED = Gauge("bitcoin_memory_info_chunks_used", "Number alloc
 MEMORY_INFO_CHUNKS_FREE = Gauge("bitcoin_memory_info_chunks_free", "Number unused chunks")
 
 
-metrics = {
+bitcoin_metrics = {
     "uptime": UPTIME,
     "network_info_connections_in": NETWORK_INFO_CONNECTIONS_IN,
     "network_info_connections_out": NETWORK_INFO_CONNECTIONS_OUT,

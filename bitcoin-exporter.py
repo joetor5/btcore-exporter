@@ -14,7 +14,7 @@ from pathlib import Path
 import yaml
 from prometheus_client import start_http_server
 from bitcoinrpc import BitcoinRpc
-from metrics import metrics
+from bitcoinpm import bitcoin_metrics
 
 HOME_DIR = Path.home()
 PLATFORM_OS = platform.system()
@@ -111,7 +111,7 @@ def main():
     rpc_user, rpc_password = get_bitcoin_rpc_credentials()
 
     bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, log_dir=APP_DIR)
-    bitcoin_exporter = BitcoinExporter(bitcoin_rpc, metrics)
+    bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)
 
     # signal handling
     signal.signal(signal.SIGTERM, graceful_shutdown)
