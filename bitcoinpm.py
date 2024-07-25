@@ -7,6 +7,14 @@ from prometheus_client import Counter, Gauge
 
 UPTIME = Gauge("bitcoin_uptime", "Total uptime of the node")
 
+BLOCKCHAIN_INFO_BLOCKS = Gauge("bitcoin_blockchain_info_blocks", "Height of the most-work fully-validated chain")
+BLOCKCHAIN_INFO_HEADERS = Gauge("bitcoin_blockchain_info_headers", "Number of headers that has been validated")
+BLOCKCHAIN_INFO_DIFFICULTY = Gauge("bitcoin_blockchain_info_difficulty", "Current difficulty")
+BLOCKCHAIN_INFO_TIME = Gauge("bitcoin_blockchain_info_time", "Block time")
+BLOCKCHAIN_INFO_MEDIAN_TIME = Gauge("bitcoin_blockchain_info_median_time", "Median block time")
+BLOCKCHAIN_INFO_VERIFICATION_PROGRESS = Gauge("bitcoin_blockchain_info_verification_progress", "Estimate of verification progress")
+BLOCKCHAIN_INFO_SIZE_ON_DISK = Gauge("bitcoin_blockchain_info_size_on_disk", "Estimated size of the block and undo files on disk")
+
 NETWORK_INFO_CONNECTIONS_IN = Gauge("bitcoin_network_info_connections_in", "Number of inbound connections")
 NETWORK_INFO_CONNECTIONS_OUT = Gauge("bitcoin_network_info_connections_out", "Number of outbound connections")
 NETWORK_INFO_CONNECTIONS = Gauge("bitcoin_network_info_connections", "Total number of connections")
@@ -25,6 +33,13 @@ MEMORY_INFO_CHUNKS_FREE = Gauge("bitcoin_memory_info_chunks_free", "Number unuse
 
 bitcoin_metrics = {
     "uptime": UPTIME,
+    "blockchain_info_blocks": BLOCKCHAIN_INFO_BLOCKS,
+    "blockchain_info_headers": BLOCKCHAIN_INFO_HEADERS,
+    "blockchain_info_difficulty": BLOCKCHAIN_INFO_DIFFICULTY,
+    "blockchain_info_time": BLOCKCHAIN_INFO_TIME,
+    "blockchain_info_median_time": BLOCKCHAIN_INFO_MEDIAN_TIME,
+    "blockchain_info_verification_progress": BLOCKCHAIN_INFO_VERIFICATION_PROGRESS,
+    "blockchain_info_size_on_disk": BLOCKCHAIN_INFO_SIZE_ON_DISK,
     "network_info_connections_in": NETWORK_INFO_CONNECTIONS_IN,
     "network_info_connections_out": NETWORK_INFO_CONNECTIONS_OUT,
     "network_info_connections": NETWORK_INFO_CONNECTIONS,

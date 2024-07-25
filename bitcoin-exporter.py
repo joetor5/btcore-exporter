@@ -49,6 +49,7 @@ class BitcoinExporter:
         
         logger.info("Starting metrics fetch, count={}".format(self.fetch_count))
         self.uptime = self.bitcoin_rpc.uptime()
+        self.blockchain_info = self.bitcoin_rpc.get_blockchain_info()
         self.network_info = self.bitcoin_rpc.get_network_info()
         self.net_totals = self.bitcoin_rpc.get_net_totals()
         self.memory_info = self.bitcoin_rpc.get_memory_info()
@@ -60,6 +61,14 @@ class BitcoinExporter:
         logger.info("Updating metrics")
         self.metrics["uptime"].set(self.uptime)
         
+        self.metrics["blockchain_info_blocks"].set(self.blockchain_info["blocks"])
+        self.metrics["blockchain_info_headers"].set(self.blockchain_info["headers"])
+        self.metrics["blockchain_info_difficulty"].set(self.blockchain_info["difficulty"])
+        self.metrics["blockchain_info_time"].set(self.blockchain_info["time"])
+        self.metrics["blockchain_info_median_time"].set(self.blockchain_info["mediantime"])
+        self.metrics["blockchain_info_verification_progress"].set(self.blockchain_info["verificationprogress"])
+        self.metrics["blockchain_info_size_on_disk"].set(self.blockchain_info["size_on_disk"])
+
         self.metrics["network_info_connections_in"].set(self.network_info["connections_in"])
         self.metrics["network_info_connections_out"].set(self.network_info["connections_out"])
         self.metrics["network_info_connections"].set(self.network_info["connections"])
