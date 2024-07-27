@@ -20,6 +20,9 @@ pip install -r requirements.txt
 chmod +x bitcoin-exporter.py
 ./bitcoin-exporter.py &
 ```
+
+This will start the exporter http server on port 8000 and collect metrics every 60 seconds. You can select a different port with the -p arg. Run with -h arg for general usage and options.
+
 4. View all the metrics (starting with bitcoin_)
 ```
 curl http://localhost:8000/metrics
