@@ -27,6 +27,7 @@ MEM_POOL_INFO_USAGE = Gauge("bitcoin_mem_pool_info_usage", "Total memory usage f
 MEMORY_INFO_USED = Gauge("bitcoin_memory_info_used", "Number of bytes used")
 MEMORY_INFO_FREE = Gauge("bitcoin_memory_info_free", "Number of bytes available in current arenas")
 MEMORY_INFO_TOTAL = Gauge("bitcoin_memory_info_total", "Total number of bytes managed")
+MEMORY_INFO_LOCKED = Gauge("bitcoin_memory_info_locked", "Amount of bytes that succeeded locking")
 MEMORY_INFO_CHUNKS_USED = Gauge("bitcoin_memory_info_chunks_used", "Number allocated chunks")
 MEMORY_INFO_CHUNKS_FREE = Gauge("bitcoin_memory_info_chunks_free", "Number unused chunks")
 
@@ -51,7 +52,7 @@ bitcoin_metrics = {
     "memory_info_used": MEMORY_INFO_USED,
     "memory_info_free": MEMORY_INFO_FREE,
     "memory_info_total": MEMORY_INFO_TOTAL,
+    "memory_info_locked": MEMORY_INFO_LOCKED,
     "memory_info_chunks_used": MEMORY_INFO_CHUNKS_USED,
-    "memory_info_chunks_used": MEMORY_INFO_CHUNKS_FREE
+    "memory_info_chunks_free": MEMORY_INFO_CHUNKS_FREE
 }
-
