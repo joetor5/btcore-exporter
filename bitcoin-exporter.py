@@ -28,8 +28,6 @@ if not APP_DIR.exists():
     APP_DIR.mkdir()
 APP_CONFIG = Path.joinpath(APP_DIR, "exporter.yaml")
 
-HTTP_PORT = 8000
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger_format = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s - %(message)s")
@@ -127,14 +125,19 @@ def main():
     parser.add_argument("-p", "--port", type=int, help="Exporter HTTP server port")
     args = parser.parse_args()
 
-    if args.port:
-        HTTP_PORT = args.port
+    # defaults
+    http_port = 8000
 
+    # update from args
+    if args.port:
+        http_port = args.port
+
+    # update from configs
     if APP_CONFIG.exists():
         exporter_config = load_exporter_config()
         if exporter_config:
             if "port" in exporter_config:
-                HTTP_PORT = exporter_config["port"]
+                http_port = exporter_config["port"]
 
     rpc_user, rpc_password = get_bitcoin_rpc_credentials()
 
@@ -145,7 +148,7 @@ def main():
     signal.signal(signal.SIGTERM, graceful_shutdown)
     signal.signal(signal.SIGINT, graceful_shutdown)
 
-    server, t = start_http_server(HTTP_PORT)
+    server, t = start_http_server(http_port)
     logger.info("Starting Bitcoin Core Exporter (pid={})".format(os.getpid()))
     while True:
         bitcoin_exporter.update_metrics()
