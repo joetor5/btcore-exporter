@@ -32,9 +32,9 @@ def test_values_init():
         assert bitcoin_metrics[metric]._value.get() == 0
 
 def test_values_set():
-    metrict_keys = bitcoin_metrics.keys()
+    metric_keys = bitcoin_metrics.keys()
     tested_metrics = 0
-    for metric in metrict_keys:
+    for metric in metric_keys:
         if metric not in TEST_DATA or not TEST_DATA[metric]:
             continue
         for value in TEST_DATA[metric]:
@@ -43,4 +43,4 @@ def test_values_set():
         
         tested_metrics += 1
         
-    assert tested_metrics == len(metrict_keys)
+    assert tested_metrics == len(metric_keys)
