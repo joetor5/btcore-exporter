@@ -15,7 +15,7 @@ test:
 	. $(VENV_EXEC) && $(PY) -m pytest .
 
 run:
-	. $(VENV_EXEC) && $(PY) $(PROG)
+	. $(VENV_EXEC) && $(PY) $(PROG) &
 
 clean:
 	rm -rf $(VENV_DIR)
