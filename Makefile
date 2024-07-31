@@ -19,3 +19,6 @@ run:
 
 clean:
 	rm -rf $(VENV_DIR)
+
+boot:
+	bash env.sh
