@@ -10,7 +10,7 @@ elif [[ $SHELL == *"zsh"* ]]; then
 fi
 
 EXPORTER_PY="$(pwd)/.venv/bin/python3"
-EXPORTER_PATH="$(pwd)/bitcoin-exporter.py"
+EXPORTER_PATH="$(pwd)/bitcoin_exporter.py"
 CRON_JOB='@reboot . '"$SHRC"' && $BITCOIN_EXPORTER_PY $BITCOIN_EXPORTER_PATH'
 
 

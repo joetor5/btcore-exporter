@@ -6,7 +6,7 @@ PY = python3
 PIP = pip3
 VENV_DIR = .venv
 VENV_EXEC = $(VENV_DIR)/bin/activate
-PROG = bitcoin-exporter.py
+PROG = bitcoin_exporter.py
 
 venv:
 	$(PY) -m venv $(VENV_DIR) && . $(VENV_EXEC) && $(PIP) install -r requirements.txt
