@@ -72,7 +72,7 @@ class BitcoinRpc:
 
     def uptime(self) -> dict:
         """Returns the total uptime of the server."""
-        return self._rpc_call("uptime2")
+        return self._rpc_call("uptime")
     
     def get_blockchain_info(self) -> dict:
         """Returns various state info regarding blockchain processing."""
