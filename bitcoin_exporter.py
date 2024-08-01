@@ -11,6 +11,7 @@ import sys
 import argparse
 import platform
 from pathlib import Path
+from collections import deque
 import yaml
 from prometheus_client import start_http_server
 from bitcoinrpc import BitcoinRpc
@@ -42,12 +43,14 @@ class BitcoinExporter:
         self.bitcoin_rpc = rpc_obj
         self.metrics = metrics
         self.fetch_count = 0
+        self.errors_q = deque()
         logger.info("Exporter initialized, metrics count={}".format(len(metrics.keys())))
 
     def _fetch_metricts(self):
         self.fetch_count += 1
         
-        logger.info("Starting metrics fetch, count={}".format(self.fetch_count))
+        logger.info("Starting Bitcoin RPC fetch, count={}".format(self.fetch_count))
+
         self.uptime = self.bitcoin_rpc.uptime()
         self.blockchain_info = self.bitcoin_rpc.get_blockchain_info()
         self.network_info = self.bitcoin_rpc.get_network_info()
@@ -55,32 +58,69 @@ class BitcoinExporter:
         self.memory_info = self.bitcoin_rpc.get_memory_info()
         self.mem_pool_info = self.bitcoin_rpc.get_mem_pool_info()
 
+        logger.info("Bitcoin RPC fetch done")
+
     def update_metrics(self):
         self._fetch_metricts()
 
-        logger.info("Updating metrics")
-        self.metrics["uptime"].set(self.uptime)
+        logger.info("Checking for RPC errors and updating metrics")
+
+        if not self.uptime["error"]:
+            self.metrics["uptime"].set(self.uptime["result"])
+        else:
+            self.errors_q.append(self.uptime)
         
-        self.metrics["blockchain_info_blocks"].set(self.blockchain_info["blocks"])
-        self.metrics["blockchain_info_headers"].set(self.blockchain_info["headers"])
-        self.metrics["blockchain_info_difficulty"].set(self.blockchain_info["difficulty"])
-        self.metrics["blockchain_info_time"].set(self.blockchain_info["time"])
-        self.metrics["blockchain_info_median_time"].set(self.blockchain_info["mediantime"])
-        self.metrics["blockchain_info_verification_progress"].set(self.blockchain_info["verificationprogress"])
-        self.metrics["blockchain_info_size_on_disk"].set(self.blockchain_info["size_on_disk"])
+        if not self.blockchain_info["error"]:
+            self.blockchain_info = self.blockchain_info["result"]
+            self.metrics["blockchain_info_blocks"].set(self.blockchain_info["blocks"])
+            self.metrics["blockchain_info_headers"].set(self.blockchain_info["headers"])
+            self.metrics["blockchain_info_difficulty"].set(self.blockchain_info["difficulty"])
+            self.metrics["blockchain_info_time"].set(self.blockchain_info["time"])
+            self.metrics["blockchain_info_median_time"].set(self.blockchain_info["mediantime"])
+            self.metrics["blockchain_info_verification_progress"].set(self.blockchain_info["verificationprogress"])
+            self.metrics["blockchain_info_size_on_disk"].set(self.blockchain_info["size_on_disk"])
+        else:
+            self.errors_q.append(self.blockchain_info)
 
-        self.metrics["network_info_connections_in"].set(self.network_info["connections_in"])
-        self.metrics["network_info_connections_out"].set(self.network_info["connections_out"])
-        self.metrics["network_info_connections"].set(self.network_info["connections"])
-        self.metrics["net_totals_total_bytes_recv"].set(self.net_totals["totalbytesrecv"])
-        self.metrics["net_totals_total_bytes_sent"].set(self.net_totals["totalbytessent"])
+        if not self.network_info["error"]:
+            self.network_info = self.network_info["result"]
+            self.metrics["network_info_connections_in"].set(self.network_info["connections_in"])
+            self.metrics["network_info_connections_out"].set(self.network_info["connections_out"])
+            self.metrics["network_info_connections"].set(self.network_info["connections"])
+        else:
+            self.errors_q.append(self.network_info)
 
-        self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
-        self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
-        self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
-        self.metrics["memory_info_used"].set(self.memory_info["locked"]["used"])
-        self.metrics["memory_info_free"].set(self.memory_info["locked"]["free"])
-        self.metrics["memory_info_total"].set(self.memory_info["locked"]["total"])
+        if not self.net_totals["error"]:
+            self.net_totals = self.net_totals["result"]
+            self.metrics["net_totals_total_bytes_recv"].set(self.net_totals["totalbytesrecv"])
+            self.metrics["net_totals_total_bytes_sent"].set(self.net_totals["totalbytessent"])
+        else:
+            self.errors_q.append(self.net_totals)
+
+        if not self.mem_pool_info["error"]:
+            self.mem_pool_info = self.mem_pool_info["result"]
+            self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
+            self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
+            self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
+        else:
+            self.errors_q.append(self.mem_pool_info)
+
+        if not self.memory_info["error"]:
+            self.memory_info = self.memory_info["result"]
+            self.metrics["memory_info_used"].set(self.memory_info["locked"]["used"])
+            self.metrics["memory_info_free"].set(self.memory_info["locked"]["free"])
+            self.metrics["memory_info_total"].set(self.memory_info["locked"]["total"])
+        else:
+            self.errors_q.append(self.memory_info)
+
+        if self.errors_q:
+            while self.errors_q:
+                error_update = self.errors_q.pop()
+                rpc_id = error_update["id"]
+                method = error_update["method"]
+                message = error_update["error"]["message"]
+                logger.error("Got error from RPC: rpc_id={}, method={}, message: {}".format(rpc_id, method, message))
+
 
 def load_exporter_config() -> dict:
     with open(APP_CONFIG) as f:
