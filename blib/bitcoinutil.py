@@ -19,6 +19,9 @@ def load_bitcoin_config(config_path: Path = BITCOIN_DIR) -> dict:
     if config_file.exists():
         with open(config_file) as f:
             for line in f:
+                if line.startswith("#"):
+                    continue
+
                 if "=" in line:
                     equal_pos = line.find("=")
                     key = line[:equal_pos]

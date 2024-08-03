@@ -19,6 +19,8 @@ def test_load_bitcoin_config():
     assert config["server"] == "1"
     assert config["rpcuser"] == TEST_DATA["rpcuser_conf"]
     assert config["rpcpassword"] == TEST_DATA["rpcpassword_conf"]
+    assert "# rpcuser" not in config
+    assert "# rpcpassword" not in config
 
 def test_get_bitcoin_rpc_credentials_env():
     env_user = TEST_DATA["rpcuser_env"]
