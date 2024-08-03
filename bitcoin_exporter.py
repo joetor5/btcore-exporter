@@ -9,22 +9,16 @@ import logging
 import signal
 import sys
 import argparse
-import platform
 from pathlib import Path
 from collections import deque
 import yaml
 from prometheus_client import start_http_server
-from bitcoinrpc import BitcoinRpc
-from bitcoinpm import bitcoin_metrics
+from blib.bitcoinrpc import BitcoinRpc
+from blib.bitcoinpm import bitcoin_metrics
+from blib.bitcoinutil import *
 
-HOME_DIR = Path.home()
-PLATFORM_OS = platform.system()
-if PLATFORM_OS == "Linux":
-    BITCOIN_DIR = Path.joinpath(HOME_DIR, ".bitcoin")
-elif PLATFORM_OS == "Darwin":
-    BITCOIN_DIR = Path.joinpath(HOME_DIR, "Library", "Application Support", "Bitcoin")
 
-APP_DIR = Path.joinpath(HOME_DIR, ".bitcoinexporter")
+APP_DIR = Path.joinpath(Path.home(), ".bitcoinexporter")
 if not APP_DIR.exists():
     APP_DIR.mkdir()
 APP_CONFIG = Path.joinpath(APP_DIR, "exporter.yaml")
@@ -125,33 +119,6 @@ class BitcoinExporter:
 def load_exporter_config() -> dict:
     with open(APP_CONFIG) as f:
         return yaml.safe_load(f)
-
-def load_bitcoin_config() -> dict:
-    config_file = Path.joinpath(BITCOIN_DIR, "bitcoin.conf")
-    config = {}
-    if config_file.exists():
-        with open(config_file) as f:
-            for line in f:
-                if "=" in line:
-                    key, val = line.split("=")
-                    config[key] = val.strip()
-    
-    return config
-    
-def get_bitcoin_rpc_credentials() -> tuple:
-    # get from env variables
-    rpc_user = os.getenv("BITCOIN_RPC_USER")
-    rpc_password = os.getenv("BITCOIN_RPC_PASSWORD")
-    if rpc_user and rpc_password:
-        logger.info("Got RPC credentials from env vars")
-        return rpc_user, rpc_password
-
-    # get from bitcoin.conf
-    config = load_bitcoin_config()
-    if config:
-        if "rpcuser" in config and "rpcpassword" in config:
-            logger.info("Got RPC credentials from bitcoin.conf")
-            return config["rpcuser"], config["rpcpassword"]
 
 def graceful_shutdown(signal_num, frame):
     logger.info("Stopping Bitcoin Core Exporter (signal={})".format(signal_num))

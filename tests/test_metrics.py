@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
-from bitcoinpm import bitcoin_metrics
+from blib.bitcoinpm import bitcoin_metrics
 
 
 TEST_DATA = {

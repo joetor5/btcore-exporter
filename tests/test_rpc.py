@@ -2,8 +2,8 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
-from bitcoinrpc import BitcoinRpc, CONNECTION_ERROR
-from bitcoin_exporter import get_bitcoin_rpc_credentials
+from blib.bitcoinrpc import BitcoinRpc, CONNECTION_ERROR
+from blib.bitcoinutil import get_bitcoin_rpc_credentials
 
 TEST_DATA = {
     "rpc_credentials": get_bitcoin_rpc_credentials(),
