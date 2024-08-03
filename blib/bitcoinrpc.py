@@ -106,4 +106,13 @@ class BitcoinRpc:
         if count < 0:
             count = 0
         return self._rpc_call("getnodeaddresses", str(count))
-    
+
+    def get_rpc_total_count(self):
+        return self.rpc_id
+
+    def get_rpc_success_count(self):
+        return self.rpc_success
+
+    def get_rpc_error_count(self):
+        return self.rpc_errors
+

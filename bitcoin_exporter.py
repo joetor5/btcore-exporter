@@ -12,7 +12,7 @@ import argparse
 from pathlib import Path
 from collections import deque
 import yaml
-from prometheus_client import start_http_server
+from prometheus_client import start_http_server, Gauge
 from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
@@ -36,14 +36,15 @@ class BitcoinExporter:
     def __init__(self, rpc_obj: BitcoinRpc, metrics: dict):
         self.bitcoin_rpc = rpc_obj
         self.metrics = metrics
-        self.fetch_count = 0
         self.errors_q = deque()
-        logger.info("Exporter initialized, metrics count={}".format(len(metrics.keys())))
+        self.exporter_rpc_fetch_time = Gauge("bitcoin_exporter_fetch_time", "Time elapsed for all rpc calls")
+        self.exporter_rpc_total = Gauge("bitcoin_exporter_rpc_total", "Total of RPC calls")
+        self.exporter_rpc_success = Gauge("bitcoin_exporter_rpc_success", "Total of RPC success calls")
+        self.exporter_rpc_error = Gauge("bitcoin_exporter_rpc_error", "Total of RPC error calls")
 
     def _fetch_metricts(self):
-        self.fetch_count += 1
-        
-        logger.info("Starting Bitcoin RPC fetch, count={}".format(self.fetch_count))
+        logger.info("Starting Exporter RPC metrics fetch")
+        start_time = time.time()
 
         self.uptime = self.bitcoin_rpc.uptime()
         self.blockchain_info = self.bitcoin_rpc.get_blockchain_info()
@@ -52,7 +53,17 @@ class BitcoinExporter:
         self.memory_info = self.bitcoin_rpc.get_memory_info()
         self.mem_pool_info = self.bitcoin_rpc.get_mem_pool_info()
 
-        logger.info("Bitcoin RPC fetch done")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.info("Exporter RPC metrics fetch done, time elapsed: {}".format(elapsed_time))
+        self.exporter_rpc_fetch_time.set(elapsed_time)
+
+        self._update_rpc_stats()
+
+    def _update_rpc_stats(self):
+        self.exporter_rpc_total.set(self.bitcoin_rpc.get_rpc_total_count())
+        self.exporter_rpc_success.set(self.bitcoin_rpc.get_rpc_success_count())
+        self.exporter_rpc_error.set(self.bitcoin_rpc.get_rpc_error_count())
 
     def update_metrics(self):
         self._fetch_metricts()
