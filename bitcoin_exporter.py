@@ -91,14 +91,6 @@ class BitcoinExporter:
         else:
             self.errors_q.append(self.net_totals)
 
-        if not self.mem_pool_info["error"]:
-            self.mem_pool_info = self.mem_pool_info["result"]
-            self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
-            self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
-            self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
-        else:
-            self.errors_q.append(self.mem_pool_info)
-
         if not self.memory_info["error"]:
             self.memory_info = self.memory_info["result"]
             self.metrics["memory_info_used"].set(self.memory_info["locked"]["used"])
@@ -107,9 +99,17 @@ class BitcoinExporter:
         else:
             self.errors_q.append(self.memory_info)
 
+        if not self.mem_pool_info["error"]:
+            self.mem_pool_info = self.mem_pool_info["result"]
+            self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
+            self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
+            self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
+        else:
+            self.errors_q.append(self.mem_pool_info)
+
         if self.errors_q:
             while self.errors_q:
-                error_update = self.errors_q.pop()
+                error_update = self.errors_q.popleft()
                 rpc_id = error_update["id"]
                 method = error_update["method"]
                 message = error_update["error"]["message"]
