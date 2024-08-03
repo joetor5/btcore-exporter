@@ -17,7 +17,7 @@ from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-
+VERSION = "1.0-dev"
 APP_DIR = Path.joinpath(Path.home(), ".bitcoinexporter")
 if not APP_DIR.exists():
     APP_DIR.mkdir()
@@ -129,7 +129,9 @@ def graceful_shutdown(signal_num, frame):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--version", action="version", version=VERSION)
     parser.add_argument("-p", "--port", type=int, help="Exporter HTTP server port")
+
     args = parser.parse_args()
 
     # defaults
