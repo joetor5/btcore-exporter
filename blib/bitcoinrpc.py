@@ -8,12 +8,18 @@ from pathlib import Path
 import requests
 
 CONNECTION_ERROR = 1
+RPC_BAD_CREDENTIALS = 2
+
+class BitcoinRpcError(Exception):
+    pass
 
 class BitcoinRpc:
     
-    def __init__(self, rpc_user, rpc_password, host_ip="127.0.0.1", host_port=8332,
+    def __init__(self, rpc_user: str, rpc_password: str, host_ip: str = "127.0.0.1", host_port: int = 8332,
                  log_level=logging.INFO, log_dir: Path = Path.home()):
-        
+        if rpc_user == "" or rpc_password == "":
+            raise BitcoinRpcError("Empty credentials")
+
         self._log_file = "{}.log".format(__name__)
         self._logger = logging.getLogger(__name__)
         self._logger.setLevel(log_level)
@@ -51,15 +57,16 @@ class BitcoinRpc:
                                         json={"jsonrpc": self.rpc_version, "id": self.rpc_id,
                                             "method": method, "params": params.split()})
         except:
-            self.rpc_errors += 1
-            self._logger.error("RPC call error: id={}, failed to establish raw connection".format(self.rpc_id))
-            return {"result": None,
-                    "error": {"code": CONNECTION_ERROR, "message": "Failed to establish raw connection"},
-                    "id": self.rpc_id,
-                    "method": "raw_connection"}
-        
+            return self._rpc_call_error(CONNECTION_ERROR, "failed to establish raw connection", "raw_connection")
+
         status_code = rpc_response.status_code
-        rpc_data = json.loads(rpc_response.text)
+        response_text = rpc_response.text
+        if status_code == 401 and response_text == "":
+            return self._rpc_call_error(RPC_BAD_CREDENTIALS,
+                                        "got empty payload and bad status code (possible wrong RPC credentials)",
+                                        method)
+
+        rpc_data = json.loads(response_text)
         rpc_data["method"] = method
         if rpc_response.ok:
             self.rpc_success += 1
@@ -69,6 +76,14 @@ class BitcoinRpc:
             self._logger.error("RPC call error: id={}, status_code={}, message: {}".format(self.rpc_id, status_code, rpc_data["error"]["message"]))
 
         return rpc_data
+
+    def _rpc_call_error(self, code, message, method):
+        self.rpc_errors += 1
+        self._logger.error("RPC call error: id={}, {}".format(self.rpc_id, message))
+        return {"result": None,
+                "error": {"code": code, "message": message},
+                "id": self.rpc_id,
+                "method": method}
 
     def uptime(self) -> dict:
         """Returns the total uptime of the server."""

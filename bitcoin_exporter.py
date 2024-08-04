@@ -9,6 +9,7 @@ import logging
 import signal
 import sys
 import argparse
+import traceback
 from pathlib import Path
 from collections import deque
 import yaml
@@ -159,7 +160,12 @@ def main():
             if "port" in exporter_config:
                 http_port = exporter_config["port"]
 
-    rpc_user, rpc_password = get_bitcoin_rpc_credentials()
+    try:
+        rpc_user, rpc_password = get_bitcoin_rpc_credentials()
+    except BitcoinConfigError as e:
+        print("\nError: {}, exporter can't start".format(e))
+        logger.error(traceback.format_exc())
+        sys.exit(1)
 
     bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, log_dir=APP_DIR)
     bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)

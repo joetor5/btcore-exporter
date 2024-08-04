@@ -12,6 +12,8 @@ if platform.system() == "Linux":
 elif platform.system() == "Darwin":
     BITCOIN_DIR = Path.joinpath(Path.home(), "Library", "Application Support", "Bitcoin")
 
+class BitcoinConfigError(Exception):
+    pass
 
 def load_bitcoin_config(config_path: Path = BITCOIN_DIR) -> dict:
     config_file = Path.joinpath(config_path, "bitcoin.conf")
@@ -42,3 +44,5 @@ def get_bitcoin_rpc_credentials(config_path: Path = BITCOIN_DIR) -> tuple:
     if config:
         if "rpcuser" in config and "rpcpassword" in config:
             return config["rpcuser"], config["rpcpassword"]
+    else:
+        raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
