@@ -11,7 +11,7 @@ from blib.bitcoinutil import get_bitcoin_rpc_credentials
 
 
 TEST_DATA = {
-    "exporter_config_path": Path.joinpath(Path.cwd(), "test_data", "exporter.yaml"),
+    "exporter_config_path": Path.joinpath(Path.cwd(), "tests", "data", "exporter.yaml"),
     "config_keys": {"port": 9001},
     "bitcoinrpc": BitcoinRpc(*get_bitcoin_rpc_credentials()),
     "metrics": bitcoin_metrics,

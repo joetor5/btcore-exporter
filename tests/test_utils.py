@@ -9,7 +9,7 @@ from blib.bitcoinutil import *
 
 
 TEST_DATA = {
-    "data_path": Path.joinpath(Path.cwd(), "test_data"),
+    "data_path": Path.joinpath(Path.cwd(), "tests", "data"),
     "data_path_bad": Path.joinpath(Path.cwd(), "tests"),
     "rpcuser_conf": "test",
     "rpcpassword_conf": "FEAFDCnkAakUZMbv71BZV82/qi3zcspQYLLjHay9lnI=",

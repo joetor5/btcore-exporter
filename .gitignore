@@ -2,4 +2,4 @@
 __pycache__
 .pytest_cache
 .DS_Store
-test_data/*.log
+tests/data/*.log

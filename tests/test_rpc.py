@@ -8,7 +8,7 @@ from blib.bitcoinrpc import BitcoinRpc, BitcoinRpcError, CONNECTION_ERROR, RPC_B
 from blib.bitcoinutil import get_bitcoin_rpc_credentials
 
 TEST_DATA = {
-    "log_dir": Path.joinpath(Path.cwd(), "test_data"),
+    "log_dir": Path.joinpath(Path.cwd(), "tests", "data"),
     "rpc_credentials": get_bitcoin_rpc_credentials(),
     "rpc_credentials_bad": ("test", "test123"),
     "bad_port": 9000,
