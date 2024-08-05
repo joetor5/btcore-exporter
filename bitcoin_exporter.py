@@ -18,7 +18,7 @@ from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "1.0-dev"
+VERSION = "1.0"
 APP_DIR = Path.joinpath(Path.home(), ".bitcoinexporter")
 if not APP_DIR.exists():
     APP_DIR.mkdir()
