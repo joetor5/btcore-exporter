@@ -2,7 +2,6 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
-import pytest
 from pathlib import Path
 from bitcoin_exporter import BitcoinExporter, load_exporter_config
 from blib.bitcoinpm import bitcoin_metrics
@@ -20,15 +19,26 @@ TEST_DATA = {
 }
 
 
-def test_bitcoin_exporter_fetch():
+def test_bitcoin_exporter():
     exporter = BitcoinExporter(TEST_DATA["bitcoinrpc"], TEST_DATA["metrics"])
     exporter._fetch_metricts()
     for attr in TEST_DATA["fetch_attr"]:
         assert eval("exporter.{}".format(attr))["error"] == None
 
+    exporter.update_metrics()
+
     for attr in TEST_DATA["stats_attr"][:2]:
-        assert eval("exporter.{}._value.get()".format(attr)) == len(TEST_DATA["fetch_attr"])
+        assert eval("exporter.{}._value.get()".format(attr)) == len(TEST_DATA["fetch_attr"]) * 2
     assert eval("exporter.{}._value.get()".format(TEST_DATA["stats_attr"][-1])) == 0
+
+    assert bitcoin_metrics["uptime"]._value.get() == exporter.uptime["result"]
+    assert bitcoin_metrics["network_info_connections_in"]._value.get() == exporter.network_info["connections_in"]
+    assert bitcoin_metrics["blockchain_info_blocks"]._value.get() == exporter.blockchain_info["blocks"]
+    assert bitcoin_metrics["net_totals_total_bytes_sent"]._value.get() == exporter.net_totals["totalbytessent"]
+    assert bitcoin_metrics["memory_info_used"]._value.get() == exporter.memory_info["locked"]["used"]
+    assert bitcoin_metrics["mem_pool_info_usage"]._value.get() == exporter.mem_pool_info["usage"]
+
+    assert not exporter.errors_q
 
 
 def test_load_exporter_config():
