@@ -128,8 +128,8 @@ class BitcoinExporter:
                 logger.error("Got error from RPC: rpc_id={}, method={}, message: {}".format(rpc_id, method, message))
 
 
-def load_exporter_config() -> dict:
-    with open(APP_CONFIG) as f:
+def load_exporter_config(config_path: Path = APP_CONFIG) -> dict:
+    with open(config_path) as f:
         return yaml.safe_load(f)
 
 def graceful_shutdown(signal_num, frame):
