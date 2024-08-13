@@ -2,10 +2,12 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
-import logging
 import json
-from pathlib import Path
 import requests
+from pathlib import Path
+import logging
+from logging.handlers import RotatingFileHandler
+
 
 CONNECTION_ERROR = 1
 RPC_BAD_CREDENTIALS = 2
@@ -16,7 +18,7 @@ class BitcoinRpcError(Exception):
 class BitcoinRpc:
     
     def __init__(self, rpc_user: str, rpc_password: str, host_ip: str = "127.0.0.1", host_port: int = 8332,
-                 log_level=logging.INFO, log_dir: Path = Path.home()):
+                 log_level=logging.INFO, log_dir: Path = Path.home(), log_bytes: int = 10000000, log_backup: int = 3):
         if rpc_user == "" or rpc_password == "":
             raise BitcoinRpcError("Empty credentials")
 
@@ -24,7 +26,7 @@ class BitcoinRpc:
         self._logger = logging.getLogger(__name__)
         self._logger.setLevel(log_level)
         self._logger_format = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s - %(message)s")
-        self._logger_handler = logging.FileHandler(Path.joinpath(log_dir, self._log_file))
+        self._logger_handler = RotatingFileHandler(Path.joinpath(log_dir, self._log_file), maxBytes=log_bytes, backupCount=log_backup)
         self._logger_handler.setFormatter(self._logger_format)
         self._logger.addHandler(self._logger_handler)
 

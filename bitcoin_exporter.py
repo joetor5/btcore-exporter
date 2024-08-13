@@ -5,7 +5,6 @@
 
 import os
 import time
-import logging
 import signal
 import sys
 import argparse
@@ -13,21 +12,25 @@ import traceback
 from pathlib import Path
 from collections import deque
 import yaml
+import logging
+from logging.handlers import RotatingFileHandler
 from prometheus_client import start_http_server, Gauge
 from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "1.0"
+VERSION = "1.1-dev"
 APP_DIR = Path.joinpath(Path.home(), ".bitcoinexporter")
 if not APP_DIR.exists():
     APP_DIR.mkdir()
 APP_CONFIG = Path.joinpath(APP_DIR, "exporter.yaml")
+LOG_MAX_BYTES = 10000000
+LOG_MAX_BACKUP = 3
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger_format = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s - %(message)s")
-logger_handler = logging.FileHandler(Path.joinpath(APP_DIR, "exporter.log"))
+logger_handler = RotatingFileHandler(Path.joinpath(APP_DIR, "exporter.log"), maxBytes=LOG_MAX_BYTES, backupCount=LOG_MAX_BACKUP)
 logger_handler.setFormatter(logger_format)
 logger.addHandler(logger_handler)
 
@@ -167,7 +170,7 @@ def main():
         logger.error(traceback.format_exc())
         sys.exit(1)
 
-    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, log_dir=APP_DIR)
+    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, log_dir=APP_DIR, log_bytes=LOG_MAX_BYTES, log_backup=LOG_MAX_BACKUP)
     bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)
 
     # signal handling
