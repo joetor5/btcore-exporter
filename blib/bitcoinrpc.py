@@ -42,14 +42,6 @@ class BitcoinRpc:
         self.rpc_id = 0
         self.rpc_success = 0
         self.rpc_errors = 0
-
-    def __repr__(self) -> str:
-        return "{cname}({user}, {passw}, {ip}, {port})".format(cname=self.__class__.__name__, 
-                                                               user=self.rpc_user, passw=self.rpc_password,
-                                                               ip=self.host_ip, port=self.host_port)
-    
-    def __str__(self) -> str:
-        pass
     
     def _rpc_call(self, method: str, params: str = "") -> dict:
         self.rpc_id += 1
