@@ -51,6 +51,6 @@ def get_bitcoin_rpc_credentials(bitcoin_config: Path = BITCOIN_DIR, custom_confi
         rpc_password = custom_config.get("rpc_password", "")
         if rpc_user and rpc_password:
             return rpc_user, rpc_password
-        else:
-            raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
+    
+    raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
 
