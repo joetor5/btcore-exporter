@@ -19,8 +19,11 @@ from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "1.1"
-APP_DIR = Path.joinpath(Path.home(), ".bitcoinexporter")
+VERSION = "1.2-dev"
+
+APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
+APP_HOME = Path(APP_ENV_HOME if APP_ENV_HOME else Path.home())
+APP_DIR = Path.joinpath(APP_HOME, ".bitcoinexporter")
 if not APP_DIR.exists():
     APP_DIR.mkdir()
 APP_CONFIG = Path.joinpath(APP_DIR, "exporter.yaml")
@@ -151,6 +154,7 @@ def main():
 
     # defaults
     http_port = 8000
+    bitcoin_host_ip = "127.0.0.1"
 
     # update from args
     if args.port:
@@ -162,15 +166,19 @@ def main():
         if exporter_config:
             if "port" in exporter_config:
                 http_port = exporter_config["port"]
+            if "host_ip" in exporter_config:
+                bitcoin_host_ip = exporter_config["host_ip"]
 
     try:
-        rpc_user, rpc_password = get_bitcoin_rpc_credentials()
+        rpc_user, rpc_password = get_bitcoin_rpc_credentials(custom_config=exporter_config)
     except BitcoinConfigError as e:
         print("\nError: {}, exporter can't start".format(e))
         logger.error(traceback.format_exc())
         sys.exit(1)
 
-    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, log_dir=APP_DIR, log_bytes=LOG_MAX_BYTES, log_backup=LOG_MAX_BACKUP)
+    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, host_ip=bitcoin_host_ip,
+                             log_dir=APP_DIR, log_bytes=LOG_MAX_BYTES, log_backup=LOG_MAX_BACKUP)
+
     bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)
 
     # signal handling

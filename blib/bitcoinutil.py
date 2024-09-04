@@ -32,7 +32,7 @@ def load_bitcoin_config(config_path: Path = BITCOIN_DIR) -> dict:
 
     return config
 
-def get_bitcoin_rpc_credentials(config_path: Path = BITCOIN_DIR) -> tuple:
+def get_bitcoin_rpc_credentials(bitcoin_config: Path = BITCOIN_DIR, custom_config: dict = None) -> tuple:
     # get from env variables
     rpc_user = os.getenv("BITCOIN_RPC_USER")
     rpc_password = os.getenv("BITCOIN_RPC_PASSWORD")
@@ -40,9 +40,17 @@ def get_bitcoin_rpc_credentials(config_path: Path = BITCOIN_DIR) -> tuple:
         return rpc_user, rpc_password
 
     # get from bitcoin.conf
-    config = load_bitcoin_config(config_path)
+    config = load_bitcoin_config(bitcoin_config)
     if config:
         if "rpcuser" in config and "rpcpassword" in config:
             return config["rpcuser"], config["rpcpassword"]
-    else:
-        raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
+
+    # get from custom config
+    if custom_config:
+        rpc_user = custom_config.get("rpc_user", "")
+        rpc_password = custom_config.get("rpc_password", "")
+        if rpc_user and rpc_password:
+            return rpc_user, rpc_password
+        else:
+            raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
+

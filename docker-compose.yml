@@ -1,0 +1,10 @@
+services:
+  bitcoin_exporter:
+    build: .
+    volumes:
+      - type: bind
+        source: ./exporter.yaml
+        target: /opt/.bitcoinexporter/exporter.yaml
+    ports:
+      - "8000:8000"
+    restart: always
