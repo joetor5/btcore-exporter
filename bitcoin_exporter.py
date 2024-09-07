@@ -149,6 +149,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--version", action="version", version=VERSION)
     parser.add_argument("-p", "--port", type=int, help="Exporter HTTP server port")
+    parser.add_argument("-r", "--rpc-ip", type=str, help="Bitcoin RPC IP")
 
     args = parser.parse_args()
 
@@ -159,6 +160,8 @@ def main():
     # update from args
     if args.port:
         http_port = args.port
+    if args.rpc_ip:
+        bitcoin_host_ip = args.rpc_ip
 
     # update from configs
     if APP_CONFIG.exists():
