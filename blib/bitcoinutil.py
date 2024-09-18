@@ -33,24 +33,28 @@ def load_bitcoin_config(config_path: Path = BITCOIN_DIR) -> dict:
     return config
 
 def get_bitcoin_rpc_credentials(bitcoin_config: Path = BITCOIN_DIR, custom_config: dict = None) -> tuple:
-    # get from env variables
+    # Check environment variables first
     rpc_user = os.getenv("BITCOIN_RPC_USER")
     rpc_password = os.getenv("BITCOIN_RPC_PASSWORD")
+
     if rpc_user and rpc_password:
         return rpc_user, rpc_password
 
-    # get from bitcoin.conf
+    # Load credentials from bitcoin.conf
     config = load_bitcoin_config(bitcoin_config)
-    if config:
-        if "rpcuser" in config and "rpcpassword" in config:
-            return config["rpcuser"], config["rpcpassword"]
+    rpc_user = config.get("rpcuser")
+    rpc_password = config.get("rpcpassword")
 
-    # get from custom config
-    if custom_config:
-        rpc_user = custom_config.get("rpc_user", "")
-        rpc_password = custom_config.get("rpc_password", "")
-        if rpc_user and rpc_password:
-            return rpc_user, rpc_password
+    if rpc_user and rpc_password:
+        return rpc_user, rpc_password
+
+    # Check custom config
+    rpc_user = custom_config.get("rpc_user") if custom_config else None
+    rpc_password = custom_config.get("rpc_password") if custom_config else None
+
+    if rpc_user and rpc_password:
+        return rpc_user, rpc_password
     
-    raise BitcoinConfigError("Unable to get bitcoin rpc credentials")
+    # If all methods fail, raise an error
+    raise BitcoinConfigError("Unable to get bitcoin RPC credentials")
 
