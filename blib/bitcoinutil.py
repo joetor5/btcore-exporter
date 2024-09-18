@@ -8,27 +8,27 @@ from pathlib import Path
 
 
 if platform.system() == "Linux":
-    BITCOIN_DIR = Path.joinpath(Path.home(), ".bitcoin")
+    BITCOIN_DIR = Path.home() / ".bitcoin"
 elif platform.system() == "Darwin":
-    BITCOIN_DIR = Path.joinpath(Path.home(), "Library", "Application Support", "Bitcoin")
+    BITCOIN_DIR = Path.home() / "Library" / "Application Support" / "Bitcoin"
+
 
 class BitcoinConfigError(Exception):
     pass
 
 def load_bitcoin_config(config_path: Path = BITCOIN_DIR) -> dict:
-    config_file = Path.joinpath(config_path, "bitcoin.conf")
+    config_file = config_path / "bitcoin.conf"
     config = {}
+
     if config_file.exists():
-        with open(config_file) as f:
+        with config_file.open() as f:
             for line in f:
-                if line.startswith("#"):
+                line = line.strip()
+                if line.startswith("#") or "=" not in line:
                     continue
 
-                if "=" in line:
-                    equal_pos = line.find("=")
-                    key = line[:equal_pos]
-                    val = line[equal_pos+1:]
-                    config[key] = val.strip()
+                key, val = line.split("=", 1)
+                config[key.strip()] = val.strip()
 
     return config
 
