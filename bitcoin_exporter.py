@@ -22,19 +22,23 @@ from blib.bitcoinutil import *
 VERSION = "1.2-dev"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
-APP_HOME = Path(APP_ENV_HOME if APP_ENV_HOME else Path.home())
-APP_DIR = Path.joinpath(APP_HOME, ".bitcoinexporter")
-if not APP_DIR.exists():
-    APP_DIR.mkdir()
-APP_CONFIG = Path.joinpath(APP_DIR, "exporter.yaml")
+APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
+APP_DIR = APP_HOME / ".bitcoinexporter"
+APP_DIR.mkdir(exist_ok=True)
+
+APP_CONFIG = APP_DIR / "exporter.yaml"
+
 LOG_MAX_BYTES = 10000000
 LOG_MAX_BACKUP = 3
 
+# Set up logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 logger_format = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s - %(message)s")
-logger_handler = RotatingFileHandler(Path.joinpath(APP_DIR, "exporter.log"), maxBytes=LOG_MAX_BYTES, backupCount=LOG_MAX_BACKUP)
+logger_handler = RotatingFileHandler(APP_DIR / "exporter.log", maxBytes=LOG_MAX_BYTES, backupCount=LOG_MAX_BACKUP)
 logger_handler.setFormatter(logger_format)
+
 logger.addHandler(logger_handler)
 
 
@@ -153,24 +157,17 @@ def main():
 
     args = parser.parse_args()
 
-    # defaults
-    http_port = 8000
-    bitcoin_host_ip = "127.0.0.1"
+    # Set defaults
+    http_port = args.port if args.port else 8000
+    bitcoin_host_ip = args.rpc_ip if args.rpc_ip else "127.0.0.1"
 
-    # update from args
-    if args.port:
-        http_port = args.port
-    if args.rpc_ip:
-        bitcoin_host_ip = args.rpc_ip
-
-    # update from configs
+    # Update from configs if available
     if APP_CONFIG.exists():
         exporter_config = load_exporter_config()
+
         if exporter_config:
-            if "port" in exporter_config:
-                http_port = exporter_config["port"]
-            if "host_ip" in exporter_config:
-                bitcoin_host_ip = exporter_config["host_ip"]
+            http_port = exporter_config.get("port", http_port)
+            bitcoin_host_ip = exporter_config.get("host_ip", bitcoin_host_ip)
 
     try:
         rpc_user, rpc_password = get_bitcoin_rpc_credentials(custom_config=exporter_config)
