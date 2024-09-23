@@ -139,8 +139,16 @@ class BitcoinExporter:
 
 
 def load_exporter_config(config_path: Path = APP_CONFIG) -> dict:
-    with open(config_path) as f:
-        return yaml.safe_load(f)
+    try:
+        with open(config_path) as f:
+            return yaml.safe_load(f) or {}
+    except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
+        logger.error(f"Error loading config: {e}")
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing YAML: {e}")
+
+    return {}
+
 
 def graceful_shutdown(signal_num, frame):
     logger.info("Stopping Bitcoin Core Exporter (signal={})".format(signal_num))
@@ -162,12 +170,11 @@ def main():
     bitcoin_host_ip = args.rpc_ip if args.rpc_ip else "127.0.0.1"
 
     # Update from configs if available
-    if APP_CONFIG.exists():
-        exporter_config = load_exporter_config()
+    exporter_config = load_exporter_config()
 
-        if exporter_config:
-            http_port = exporter_config.get("port", http_port)
-            bitcoin_host_ip = exporter_config.get("host_ip", bitcoin_host_ip)
+    if exporter_config:
+        http_port = exporter_config.get("port", http_port)
+        bitcoin_host_ip = exporter_config.get("host_ip", bitcoin_host_ip)
 
     try:
         rpc_user, rpc_password = get_bitcoin_rpc_credentials(custom_config=exporter_config)
