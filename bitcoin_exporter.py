@@ -76,17 +76,22 @@ class BitcoinExporter:
         self.exporter_rpc_success.set(self.bitcoin_rpc.get_rpc_success_count())
         self.exporter_rpc_error.set(self.bitcoin_rpc.get_rpc_error_count())
 
+    def _check_error(self, metric):
+        if not metric["error"]:
+            return False
+        else:
+            self.errors_q.append(metric)
+            return True
+
     def update_metrics(self):
         self._fetch_metricts()
 
         logger.info("Checking for RPC errors and updating metrics")
 
-        if not self.uptime["error"]:
+        if not self._check_error(self.uptime):
             self.metrics["uptime"].set(self.uptime["result"])
-        else:
-            self.errors_q.append(self.uptime)
         
-        if not self.blockchain_info["error"]:
+        if not self._check_error(self.blockchain_info):
             self.blockchain_info = self.blockchain_info["result"]
             self.metrics["blockchain_info_blocks"].set(self.blockchain_info["blocks"])
             self.metrics["blockchain_info_headers"].set(self.blockchain_info["headers"])
@@ -95,39 +100,29 @@ class BitcoinExporter:
             self.metrics["blockchain_info_median_time"].set(self.blockchain_info["mediantime"])
             self.metrics["blockchain_info_verification_progress"].set(self.blockchain_info["verificationprogress"])
             self.metrics["blockchain_info_size_on_disk"].set(self.blockchain_info["size_on_disk"])
-        else:
-            self.errors_q.append(self.blockchain_info)
 
-        if not self.network_info["error"]:
+        if not self._check_error(self.network_info):
             self.network_info = self.network_info["result"]
             self.metrics["network_info_connections_in"].set(self.network_info["connections_in"])
             self.metrics["network_info_connections_out"].set(self.network_info["connections_out"])
             self.metrics["network_info_connections"].set(self.network_info["connections"])
-        else:
-            self.errors_q.append(self.network_info)
 
-        if not self.net_totals["error"]:
+        if not self._check_error(self.net_totals):
             self.net_totals = self.net_totals["result"]
             self.metrics["net_totals_total_bytes_recv"].set(self.net_totals["totalbytesrecv"])
             self.metrics["net_totals_total_bytes_sent"].set(self.net_totals["totalbytessent"])
-        else:
-            self.errors_q.append(self.net_totals)
 
-        if not self.memory_info["error"]:
+        if not self._check_error(self.memory_info):
             self.memory_info = self.memory_info["result"]
             self.metrics["memory_info_used"].set(self.memory_info["locked"]["used"])
             self.metrics["memory_info_free"].set(self.memory_info["locked"]["free"])
             self.metrics["memory_info_total"].set(self.memory_info["locked"]["total"])
-        else:
-            self.errors_q.append(self.memory_info)
 
-        if not self.mem_pool_info["error"]:
+        if not self._check_error(self.mem_pool_info):
             self.mem_pool_info = self.mem_pool_info["result"]
             self.metrics["mem_pool_info_size"].set(self.mem_pool_info["size"])
             self.metrics["mem_pool_info_bytes"].set(self.mem_pool_info["bytes"])
             self.metrics["mem_pool_info_usage"].set(self.mem_pool_info["usage"])
-        else:
-            self.errors_q.append(self.mem_pool_info)
 
         if self.errors_q:
             while self.errors_q:
