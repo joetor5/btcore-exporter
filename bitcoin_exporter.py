@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2024 Joel Torres
+# Copyright (c) 2024-2025 Joel Torres
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
@@ -19,7 +19,7 @@ from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "1.2-dev"
+VERSION = "1.2"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
