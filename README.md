@@ -1,4 +1,4 @@
-# bitcoin-core-exporter
+# btcore-exporter
 
 Simple [Prometheus](https://prometheus.io/) exporter for exposing various metrics from a full [Bitcoin Core](https://bitcoincore.org/) node.
 
