@@ -19,7 +19,7 @@ from blib.bitcoinrpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "1.2"
+VERSION = "0.1.2"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
