@@ -1,18 +1,19 @@
-# Copyright (c) 2024 Joel Torres
+# Copyright (c) 2024-2025 Joel Torres
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or https://opensource.org/license/mit.
 
+import os
 from pathlib import Path
 from bitcoin_exporter import BitcoinExporter, load_exporter_config
 from blib.bitcoinpm import bitcoin_metrics
-from blib.bitcoinrpc import BitcoinRpc
+from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinutil import get_bitcoin_rpc_credentials
 
 
 TEST_DATA = {
     "exporter_config_path": Path.joinpath(Path.cwd(), "tests", "data", "exporter.yaml"),
     "config_keys": {"port": 9001},
-    "bitcoinrpc": BitcoinRpc(*get_bitcoin_rpc_credentials()),
+    "bitcoinrpc": BitcoinRpc(*get_bitcoin_rpc_credentials(), host_ip=os.getenv("BITCOIN_RPC_IP")),
     "metrics": bitcoin_metrics,
     "fetch_attr": ["uptime", "blockchain_info", "network_info", "net_totals", "memory_info", "mem_pool_info"],
     "stats_attr": ["exporter_rpc_total", "exporter_rpc_success", "exporter_rpc_error"]

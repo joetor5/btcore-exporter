@@ -15,11 +15,11 @@ import yaml
 import logging
 from logging.handlers import RotatingFileHandler
 from prometheus_client import start_http_server, Gauge
-from blib.bitcoinrpc import BitcoinRpc
+from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
@@ -128,9 +128,8 @@ class BitcoinExporter:
             while self.errors_q:
                 error_update = self.errors_q.popleft()
                 rpc_id = error_update["id"]
-                method = error_update["method"]
                 message = error_update["error"]["message"]
-                logger.error("Got error from RPC: rpc_id={}, method={}, message: {}".format(rpc_id, method, message))
+                logger.error("Got error from RPC: rpc_id={}, message: {}".format(rpc_id, message))
 
 
 def load_exporter_config(config_path: Path = APP_CONFIG) -> dict:
@@ -178,8 +177,7 @@ def main():
         logger.error(traceback.format_exc())
         sys.exit(1)
 
-    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, host_ip=bitcoin_host_ip,
-                             log_dir=APP_DIR, log_bytes=LOG_MAX_BYTES, log_backup=LOG_MAX_BACKUP)
+    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, host_ip=bitcoin_host_ip)
 
     bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)
 
