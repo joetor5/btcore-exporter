@@ -2,20 +2,24 @@
 
 Simple [Prometheus](https://prometheus.io/) exporter for exposing various metrics from a full [Bitcoin Core](https://bitcoincore.org/) node.
 
-## Setup
+Works on macOS and GNU/Linux systems.
 
-1. Clone the repo on the same machine where the Bitcoin Core node is running.
+## :hammer: Manual Setup
+
+:one: **Clone the repo on the same machine where the Bitcoin Core node is running.**
 ```
 git clone https://github.com/joetor5/bitcoin-core-exporter.git
 cd bitcoin-core-exporter
 ```
-2. Create a Python venv and install dependencies
+
+:two: **Create a Python venv and install dependencies**
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-3. Start the exporter
+
+:three: **Start the exporter**
 ```
 chmod +x bitcoin_exporter.py
 ./bitcoin_exporter.py &
@@ -23,11 +27,12 @@ chmod +x bitcoin_exporter.py
 
 This will start the exporter http server on port 8000 and collect metrics every 60 seconds. You can select a different port with the -p arg. Run with -h arg for general usage and options.
 
-4. View all the metrics (starting with bitcoin_)
+:four: **View all the metrics (starting with bitcoin_)**
 ```
 curl http://localhost:8000/metrics
+
 ```
-5. Modify the prometheus.yml config for pulling these metrics from the exporter
+:five: **Modify the prometheus.yml config for pulling these metrics from the exporter**
 ```
 scrape_configs:
 
@@ -38,108 +43,152 @@ scrape_configs:
 
 ```
 
-### ⚙️ Makefile Setup
-If the repository contains a `Makefile`, you can use it to simplify setup and management.
+:six: **Stop the exporter**
+```
+pkill -f bitcoin_exporter
+```
 
-### **1️⃣ Install `make` (if not already installed)**
-   ```sh
-   # Ubuntu (WSL)
-   sudo apt install make 
 
-   # macOS
-   brew install make      
+## :wrench: Make Setup
 
-   # Windows (PowerShell, Chocolatey required)
-   choco install make     
+:one: **Install `make` (if not already installed)**
+```sh
+# Linux (Ubuntu)
+sudo apt install make 
 
-# make stop (Not available in the current Makefile)
+# macOS
+brew install make      
+```
 
-Note for Windows users:
-・Makefile does not work in Windows PowerShell natively.
-・It is recommended to use WSL (Windows Subsystem for Linux) to avoid issues.
+:two: **Set up the virtual environment**
+```sh
+make venv
+```
 
-2️⃣ Set up the virtual environment
-   make venv
+:three: **Start the exporter**
+```sh
+make run
+```
 
-3️⃣ Start the exporter
-   make run
+:four: **Stop the exporter**
 
-4️⃣ Stop the exporter
-This Makefile does not have a make stop command, but you can stop the process manually:
-   pkill -f bitcoin_exporter.py  # Linux/macOS
+Currently the Makefile does not have a make stop command, but you can stop the process manually:
+```sh
+pkill -f bitcoin_exporter
+```
 
-On Windows (PowerShell), use:
-   taskkill /IM python.exe /F
+:five: **Reset the virtual environment (optional)**
 
-5️⃣ Reset the virtual environment (optional)
 If you want to reset your environment, you can delete the virtual environment and set it up again:
 ```sh
-   make clean  # Removes the virtual environment
-   make venv   # Recreates the virtual environment
+make clean  # Removes the virtual environment
+make venv   # Recreates the virtual environment
+```
 
-6️⃣ Enable auto-start on reboot (optional)
+:six: **Enable auto-start on reboot (optional)**
+
 If you want the Bitcoin Core exporter to start automatically when your system reboots, you can run:
 
 ```sh
-   make boot
+make boot
+```
 
 This will:
-・Generate a startup script (~/.bitcoin_exporter_boot.sh)
-・Register the script in crontab to run on reboot
+* Generate a startup script (~/.bitcoin_exporter_boot.sh)
+* Register the script in crontab to run on reboot
 
 You can verify the scheduled job with:
-   crontab -l
+```sh
+crontab -l
+```
 
 If you want to remove the auto-start feature, run:
-   crontab -e
-
-and delete the line that contains:
-   @reboot ~/.bitcoin_exporter_boot.sh
-
-
-### 🐳 Docker Setup
-You can run `bitcoin_exporter.py` in a Docker container for easier deployment.
-
----
-
-1️⃣ Install Docker (if not already installed)
 ```sh
-# Ubuntu (WSL)
-   sudo apt update
-   sudo apt install docker.io -y
-   sudo systemctl start docker
-   sudo systemctl enable docker
+crontab -e
+```
 
-# Add user to Docker group (optional, prevents needing `sudo`)
-   sudo usermod -aG docker $USER
-   newgrp docker
+and delete the line that contains: `@reboot ~/.bitcoin_exporter_boot.sh`
+
+
+## :whale: Docker Setup
+
+:one: **Install Docker (if not already installed)**
+```sh
+# Linux (Ubuntu)
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+```
 
 To check if Docker is installed:
-   docker --version
+```sh
+docker --version
+sudo systemctl status docker
+```
+:white_check_mark: If you see the Docker version and the service active (running), installation is complete.
 
-#✅ If you see the Docker version, installation is complete.#
+:two: **Add user to Docker group (optional, prevents needing `sudo`)**
+```sh
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
-2️⃣ Build the Docker image
+:three: **Start the container (Docker Compose)**
+
 In the project root directory, run:
-   docker build -t bitcoin-exporter .
-✅ This will create a Docker image named bitcoin-exporter.
+```sh
+docker compose up -d
+```
+:white_check_mark: This will build the Docker image, start running it in the background, and set it to start on system boot.
 
-3️⃣ Run the container
+If for some reason you can't run the Docker compose command, execute step #4 and #5 to build and run the image manually.
+
+:four: **Build the Docker image (skip if step #3 was executed)**
+
+In the project root directory, run:
+```sh
+docker build -t bitcoin-exporter .
+```
+:white_check_mark: This will create a Docker image named bitcoin-exporter.
+
+:five: **Run the container (skip if step #3 was executed)**
+
 To start the exporter in a container:
-   docker run -d -p 8000:8000 --name bitcoin-exporter bitcoin-exporter
-✅ This runs bitcoin_exporter.py in the background.
+```sh
+docker run -d -p 8000:8000 --name bitcoin-exporter bitcoin-exporter
+```
+:white_check_mark: This runs bitcoin_exporter.py in the background.
 
-4️⃣ Verify that it's running
+:six: **Verify that it's running**
+
 Check running containers:
-   docker ps
+```sh
+docker ps
+```
 If the bitcoin-exporter container is running, test the metrics endpoint:
-   curl http://localhost:8000/metrics
-✅ If you see Bitcoin metrics, the exporter is working!
+```sh
+curl http://localhost:8000/metrics
+```
+:white_check_mark: If you see Bitcoin metrics, the exporter is working!
 
-5️⃣ Stop and remove the container
+:seven: **Stop and remove the container (Docker Compose)**
+
+```sh
+docker compose down
+```
+
+:eight: **Stop and remove the container (manual, skip if step #7 was executed)**
+
 To stop the running container:
-   docker stop bitcoin-exporter
+```sh
+docker stop bitcoin-exporter
+```
 To remove the container:
-   docker rm bitcoin-exporter
+```sh
+docker rm bitcoin-exporter
+```
 To delete the image:
-   docker rmi bitcoin-exporter
+```sh
+docker rmi bitcoin-exporter
+```
