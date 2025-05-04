@@ -4,6 +4,10 @@ Simple [Prometheus](https://prometheus.io/) exporter for exposing various metric
 
 Works on macOS and GNU/Linux systems.
 
+## License
+
+Distributed under the MIT License. See the accompanying file [LICENSE](https://github.com/joetor5/btcore-exporter/blob/main/LICENSE).
+
 ## :hammer: Manual Setup
 
 :one: **Clone the repo on the same machine where the Bitcoin Core node is running.**
