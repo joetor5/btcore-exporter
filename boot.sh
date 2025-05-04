@@ -1,7 +1,6 @@
 #!/bin/bash
 # Copyright (c) 2024 Joel Torres
-# Distributed under the MIT software license, see the accompanying
-# file LICENSE or https://opensource.org/license/mit.
+# Distributed under the MIT License. See the accompanying file LICENSE.
 
 if [[ $SHELL == *"bash"* ]]; then
     SHRC=".bashrc"

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2024-2025 Joel Torres
-# Distributed under the MIT software license, see the accompanying
-# file LICENSE or https://opensource.org/license/mit.
+# Distributed under the MIT License. See the accompanying file LICENSE.
 
 import os
 import time
