@@ -4,11 +4,21 @@ Simple [Prometheus](https://prometheus.io/) exporter for exposing various metric
 
 Works on macOS and GNU/Linux systems.
 
+## Table of Contents
+
+- [License](#license)
+- [Installing](#installing)
+  - [Manual Setup](#manual-setup)
+  - [Make Setup](#make-setup)
+  - [Docker Setup](#docker-setup)
+
 ## License
 
 Distributed under the MIT License. See the accompanying file [LICENSE](https://github.com/joetor5/btcore-exporter/blob/main/LICENSE).
 
-## :hammer: Manual Setup
+## Installing
+
+### Manual Setup
 
 :one: **Clone the repo on the same machine where the Bitcoin Core node is running.**
 ```
@@ -53,7 +63,7 @@ pkill -f bitcoin_exporter
 ```
 
 
-## :wrench: Make Setup
+### Make Setup
 
 :one: **Install `make` (if not already installed)**
 ```sh
@@ -114,7 +124,7 @@ crontab -e
 and delete the line that contains: `@reboot ~/.bitcoin_exporter_boot.sh`
 
 
-## :whale: Docker Setup
+### Docker Setup
 
 :one: **Install Docker (if not already installed)**
 ```sh
