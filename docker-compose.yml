@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Joel Torres
+# Distributed under the MIT License. See the accompanying file LICENSE.
+
 services:
   bitcoin_exporter:
     build: .
