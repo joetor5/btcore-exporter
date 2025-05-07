@@ -18,7 +18,7 @@ from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "0.1.4-dev"
+VERSION = "0.1.4"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
@@ -138,8 +138,8 @@ def load_exporter_config(config_path: Path = APP_CONFIG) -> dict:
     try:
         with open(config_path) as f:
             return yaml.safe_load(f) or {}
-    except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
-        logger.error(f"Error loading config: {e}")
+    except (FileNotFoundError, IsADirectoryError, PermissionError):
+        logger.warning(f"Exporter config not found ({APP_CONFIG}), other methods of configuration will be used")
     except yaml.YAMLError as e:
         logger.error(f"Error parsing YAML: {e}")
 
@@ -188,7 +188,7 @@ def main():
     signal.signal(signal.SIGINT, graceful_shutdown)
 
     server, t = start_http_server(http_port)
-    logger.info("Starting Bitcoin Core Exporter (pid={})".format(os.getpid()))
+    logger.info("Starting Bitcoin Core Exporter v{} (pid={})".format(VERSION, os.getpid()))
     while True:
         bitcoin_exporter.update_metrics()
         time.sleep(60)
