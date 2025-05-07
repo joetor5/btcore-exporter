@@ -211,3 +211,20 @@ To delete the image:
 ```sh
 docker rmi bitcoin-exporter
 ```
+
+:nine: **Update the container image (Docker Compose)**
+
+
+Pull the latest changes:
+```sh
+git pull
+```
+
+Then stop the container, rebuild the image, and restart the container:
+
+```sh
+docker compose down
+docker compose up --build -d && docker image prune -f
+```
+
+If Docker Compose is not an option, simply execute steps #8, #4, and #5 (in that order) for updating the image.
