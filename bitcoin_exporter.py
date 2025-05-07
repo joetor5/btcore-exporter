@@ -139,7 +139,7 @@ def load_exporter_config(config_path: Path = APP_CONFIG) -> dict:
         with open(config_path) as f:
             return yaml.safe_load(f) or {}
     except (FileNotFoundError, IsADirectoryError, PermissionError):
-        logger.warning(f"Exporter config not found ({APP_CONFIG}), other methods of configuration will be used")
+        logger.warning(f"Exporter config not found or unable to read ({APP_CONFIG}), other methods of configuration will be used")
     except yaml.YAMLError as e:
         logger.error(f"Error parsing YAML: {e}")
 
