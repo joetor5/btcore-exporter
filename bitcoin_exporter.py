@@ -18,7 +18,7 @@ from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "0.1.3"
+VERSION = "0.1.4-dev"
 
 APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
@@ -35,10 +35,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 logger_format = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s - %(message)s")
-logger_handler = RotatingFileHandler(APP_DIR / "exporter.log", maxBytes=LOG_MAX_BYTES, backupCount=LOG_MAX_BACKUP)
-logger_handler.setFormatter(logger_format)
+logger_file_handler = RotatingFileHandler(APP_DIR / "exporter.log", maxBytes=LOG_MAX_BYTES, backupCount=LOG_MAX_BACKUP)
+logger_file_handler.setFormatter(logger_format)
+logger_console_handler = logging.StreamHandler()
+logger_console_handler.setFormatter(logger_format)
 
-logger.addHandler(logger_handler)
+logger.addHandler(logger_file_handler)
+logger.addHandler(logger_console_handler)
 
 
 class BitcoinExporter:
