@@ -90,9 +90,8 @@ make run
 
 :four: **Stop the exporter**
 
-Currently the Makefile does not have a make stop command, but you can stop the process manually:
 ```sh
-pkill -f bitcoin_exporter
+make stop
 ```
 
 :five: **Reset the virtual environment (optional)**
