@@ -20,6 +20,8 @@ Distributed under the MIT License. See the accompanying file [LICENSE](https://g
 
 ### Manual Setup
 
+:hammer:
+
 :one: **Clone the repo on the same machine where the Bitcoin Core node is running.**
 ```
 git clone https://github.com/joetor5/bitcoin-core-exporter.git
@@ -64,6 +66,8 @@ pkill -f bitcoin_exporter
 
 
 ### Make Setup
+
+:gear:
 
 :one: **Install `make` (if not already installed)**
 ```sh
@@ -125,6 +129,8 @@ and delete the line that contains: `@reboot ~/.bitcoin_exporter_boot.sh`
 
 
 ### Docker Setup
+
+:whale:
 
 :one: **Install Docker (if not already installed)**
 ```sh
