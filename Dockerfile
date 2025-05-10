@@ -10,6 +10,6 @@ ENV BTCORERPC_LOG_CONSOLE=1
 
 COPY . /opt/
 RUN pip install -r /opt/requirements.txt
-RUN mkdir /opt/.bitcoinexporter
+RUN mkdir /opt/.btcore
 
 ENTRYPOINT [ "python", "bitcoin_exporter.py" ]
