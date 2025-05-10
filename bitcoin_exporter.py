@@ -18,11 +18,11 @@ from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinpm import bitcoin_metrics
 from blib.bitcoinutil import *
 
-VERSION = "0.1.4"
+__version__ = "0.1.5-dev"
 
-APP_ENV_HOME = os.getenv("BITCOIN_EXPORTER_HOME")
+APP_ENV_HOME = os.getenv("BTCORE_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
-APP_DIR = APP_HOME / ".bitcoinexporter"
+APP_DIR = APP_HOME / ".btcore"
 APP_DIR.mkdir(exist_ok=True)
 
 APP_CONFIG = APP_DIR / "exporter.yaml"
@@ -155,7 +155,7 @@ def graceful_shutdown(signal_num, frame):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--version", action="version", version=VERSION)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument("-p", "--port", type=int, help="Exporter HTTP server port")
     parser.add_argument("-r", "--rpc-ip", type=str, help="Bitcoin RPC IP")
 
@@ -188,7 +188,7 @@ def main():
     signal.signal(signal.SIGINT, graceful_shutdown)
 
     server, t = start_http_server(http_port)
-    logger.info("Starting Bitcoin Core Exporter v{} (pid={})".format(VERSION, os.getpid()))
+    logger.info("Starting Bitcoin Core Exporter v{} (pid={})".format(__version__, os.getpid()))
     while True:
         bitcoin_exporter.update_metrics()
         time.sleep(60)
