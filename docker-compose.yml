@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Joel Torres
+# Copyright (c) 2024-2025 Joel Torres
 # Distributed under the MIT License. See the accompanying file LICENSE.
 
 services:
@@ -7,7 +7,7 @@ services:
     volumes:
       - type: bind
         source: ./exporter.yaml
-        target: /opt/.bitcoinexporter/exporter.yaml
+        target: /opt/.btcore/exporter.yaml
     ports:
       - "8000:8000"
     restart: always
