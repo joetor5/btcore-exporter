@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Joel Torres
 # Distributed under the MIT License. See the accompanying file LICENSE.
 
-from blib.bitcoinpm import bitcoin_metrics
+from bitcoin_exporter import bitcoin_metrics
 
 
 TEST_DATA = {

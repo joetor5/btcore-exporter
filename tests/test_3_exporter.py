@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 from bitcoin_exporter import BitcoinExporter, load_exporter_config
-from blib.bitcoinpm import bitcoin_metrics
+from bitcoin_exporter import bitcoin_metrics
 from btcorerpc.rpc import BitcoinRpc
 from blib.bitcoinutil import get_bitcoin_rpc_credentials
 
