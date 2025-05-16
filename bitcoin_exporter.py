@@ -17,7 +17,7 @@ from prometheus_client import start_http_server, Gauge
 from btcorerpc.rpc import BitcoinRpc
 from btcoreutil import *
 
-__version__ = "0.1.5-dev"
+__version__ = "0.1.5"
 
 APP_ENV_HOME = os.getenv("BTCORE_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
