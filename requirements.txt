@@ -1,4 +1,5 @@
 btcorerpc==0.1.1
+btcoreutil==0.1.0
 certifi==2024.7.4
 charset-normalizer==3.3.2
 exceptiongroup==1.2.2

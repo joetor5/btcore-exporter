@@ -3,10 +3,9 @@
 
 import os
 from pathlib import Path
-from bitcoin_exporter import BitcoinExporter, load_exporter_config
-from bitcoin_exporter import bitcoin_metrics
+from bitcoin_exporter import BitcoinExporter, bitcoin_metrics, load_exporter_config
 from btcorerpc.rpc import BitcoinRpc
-from blib.bitcoinutil import get_bitcoin_rpc_credentials
+from btcoreutil import get_bitcoin_rpc_credentials
 
 
 TEST_DATA = {

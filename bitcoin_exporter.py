@@ -15,7 +15,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from prometheus_client import start_http_server, Gauge
 from btcorerpc.rpc import BitcoinRpc
-from blib.bitcoinutil import *
+from btcoreutil import *
 
 __version__ = "0.1.5-dev"
 
