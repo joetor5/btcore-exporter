@@ -8,7 +8,7 @@ ENV BTCORE_HOME=/opt
 ENV BTCORERPC_LOG=1
 ENV BTCORERPC_LOG_CONSOLE=1
 
-COPY . /opt/
+COPY bitcoin_exporter.py requirements.txt /opt/
 RUN pip install -r /opt/requirements.txt
 RUN mkdir /opt/.btcore
 
