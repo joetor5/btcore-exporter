@@ -11,7 +11,7 @@ from btcoreutil import get_bitcoin_rpc_credentials
 TEST_DATA = {
     "exporter_config_path": Path.joinpath(Path.cwd(), "tests", "data", "exporter.yaml"),
     "config_keys": {"port": 9001},
-    "bitcoinrpc": BitcoinRpc(*get_bitcoin_rpc_credentials(), host_ip=os.getenv("BITCOIN_RPC_IP")),
+    "bitcoinrpc": BitcoinRpc(*get_bitcoin_rpc_credentials(), host_ip=os.getenv("BITCOIN_RPC_IP"), raw_json_response=True),
     "metrics": bitcoin_metrics,
     "fetch_attr": ["uptime", "blockchain_info", "network_info", "net_totals", "memory_info", "mem_pool_info"],
     "stats_attr": ["exporter_rpc_total", "exporter_rpc_success", "exporter_rpc_error"]

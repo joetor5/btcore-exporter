@@ -17,7 +17,7 @@ from prometheus_client import start_http_server, Gauge
 from btcorerpc.rpc import BitcoinRpc
 from btcoreutil import *
 
-__version__ = "0.1.5"
+__version__ = "0.1.6-dev"
 
 APP_ENV_HOME = os.getenv("BTCORE_HOME")
 APP_HOME = Path(APP_ENV_HOME) if APP_ENV_HOME else Path.home()
@@ -233,7 +233,7 @@ def main():
         logger.error(traceback.format_exc())
         sys.exit(1)
 
-    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, host_ip=bitcoin_host_ip)
+    bitcoin_rpc = BitcoinRpc(rpc_user, rpc_password, host_ip=bitcoin_host_ip, raw_json_response=True)
 
     bitcoin_exporter = BitcoinExporter(bitcoin_rpc, bitcoin_metrics)
 
