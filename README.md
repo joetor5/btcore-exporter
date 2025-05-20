@@ -6,15 +6,11 @@ Works on macOS and GNU/Linux systems.
 
 ## Table of Contents
 
-- [License](#license)
 - [Installing](#installing)
   - [Manual Setup](#manual-setup)
   - [Make Setup](#make-setup)
   - [Docker Setup](#docker-setup)
-
-## License
-
-Distributed under the MIT License. See the accompanying file LICENSE.
+- [License](#license)
 
 ## Installing
 
@@ -228,3 +224,7 @@ docker compose up --build -d && docker image prune -f
 ```
 
 If Docker Compose is not an option, simply execute steps #8, #4, and #5 (in that order) for updating the image.
+
+## License
+
+Distributed under the MIT License. See the accompanying file LICENSE.
